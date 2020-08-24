@@ -32,8 +32,11 @@ then
         exit 1
 fi
 
+# Force MAC address to lowercase for DB comparison
+MAC=${1,,}
+
 # Find AP
-SITE_OBJID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("device").find({"mac":"'"$1"'"}).forEach(function(document){print(document.site_id)})')
+SITE_OBJID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("device").find({"mac":"'"$MAC"'"}).forEach(function(document){print(document.site_id)})')
 
 if [[ -z $SITE_OBJID ]]
 then
@@ -57,7 +60,7 @@ DOMAIN=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").setting.find(
 URL="https://$DOMAIN:8443/manage/site/$SITE_ID/devices/list/1/100"
 
 # Output
-echo "AP MAC: $1"
+echo "AP MAC: $MAC"
 echo "Site Name: $SITE_NAME"
 echo "Site ID: $SITE_ID"
 echo "Site URL: $URL"
