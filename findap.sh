@@ -33,29 +33,34 @@ then
 fi
 
 findSiteId() {
-site_id=$(mongo ace --port 27117 --quiet <<EOF | grep site_id | cut -d '"' -f4
+SITE_ID=$(mongo ace --port 27117 --quiet <<EOF | grep site_id | cut -d '"' -f4
         db.device.find({"mac":"$1"}, {}).pretty()
 EOF
 )
-echo $site_id
+echo $SITE_ID
 }
 
 
 findSiteName() {
-site_name=$(mongo ace --port 27117 --quiet <<EOF
+SITE_NAME=$(mongo ace --port 27117 --quiet <<EOF
         db.site.find({"_id":ObjectId("$1")}, {}).pretty()
 EOF
 )
-echo $site_name
+echo $SITE_NAME
 }
 
-result=$(findSiteName $(findSiteId $1))
+RESULT=$(findSiteName $(findSiteId $1))
 
-if [[ $result == *"Error: invalid object id: length"* ]]
+if [[ $RESULT == *"Error: invalid object id: length"* ]]
 then
         echo "Error: AP MAC $1 not found in UniFi database."
 else
+        SITE_NAME=$(echo $RESULT | cut -d '"' -f8)
+        SITE_ID=$(echo $RESULT | cut -d '"' -f12)
+        DOMAIN=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").setting.find({"key": "super_identity"}).forEach(function(document){ print(document.hostname) })')
+        URL="https://$DOMAIN:8443/manage/site/$SITE_ID/devices/list/1/100"
         echo "AP MAC: $1"
-        echo "Site Name: $(echo $result | cut -d '"' -f8)"
-        echo "Site ID: $(echo $result | cut -d '"' -f12)"
+        echo "Site Name: $SITE_NAME"
+        echo "Site ID: $SITE_ID"
+        echo "Site URL: $URL"
 fi
