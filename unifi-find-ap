@@ -25,7 +25,7 @@ then
 fi
 
 # Validate MAC address supplied
-if ! [[ `echo $1 | egrep "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"` ]]
+if ! [[ $1 =~ ^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$ ]]
 then
         echo -e "Error: Invalid MAC address.\n"
         display_usage
