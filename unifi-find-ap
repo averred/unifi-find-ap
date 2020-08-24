@@ -45,8 +45,8 @@ then
 fi
 
 # Find site name and id using object id previously retrieved
-SITE_NAME=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.desc)})')
-SITE_ID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.name)})')
+SITE_NAME=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"$SITE_OBJID"'")}).forEach(function(document){print(document.desc)})')
+SITE_ID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"$SITE_OBJID"'")}).forEach(function(document){print(document.name)})')
 
 if [[ -z $SITE_NAME ]] || [[ -z $SITE_ID ]]
 then
