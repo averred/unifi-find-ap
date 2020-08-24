@@ -5,14 +5,14 @@
 # Usage helper function
 display_usage() {
         echo "This script searches the UniFi AP by MAC address and returns site information."
+        echo "The MAC address must be supplied in colon-hexadecimal notation (01:23:45:67:78:9a)."
         echo -e "Usage: $0 <UniFi AP MAC>\n"
-        echo "MAC address must be supplied in colon-hexadecimal notation (01:23:45:67:78:9a)"
 }
 
 # Display usage and exit if no parameters supplied
 if [[ -z $1 ]]
 then
-        echo "Error: No MAC address supplied."
+        echo -e "Error: No MAC address supplied.\n"
         display_usage
         exit 1
 fi
@@ -27,7 +27,7 @@ fi
 # Validate MAC address supplied
 if ! [[ `echo $1 | egrep "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"` ]]
 then
-        echo "Error: Invalid MAC address."
+        echo -e "Error: Invalid MAC address.\n"
         display_usage
         exit 1
 fi
