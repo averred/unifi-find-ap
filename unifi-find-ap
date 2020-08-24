@@ -40,7 +40,7 @@ SITE_OBJID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollec
 
 if [[ -z $SITE_OBJID ]]
 then
-        echo -e "Error: AP MAC $1 not found in UniFi database."
+        echo -e "Error: AP MAC $MAC not found in UniFi database."
         exit 1
 fi
 
