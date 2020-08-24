@@ -32,35 +32,27 @@ then
         exit 1
 fi
 
-findSiteId() {
-SITE_ID=$(mongo ace --port 27117 --quiet <<EOF | grep site_id | cut -d '"' -f4
-        db.device.find({"mac":"$1"}, {}).pretty()
-EOF
-)
-echo $SITE_ID
-}
+# Find AP
+SITE_OBJID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("device").find({"mac":"'"$1"'"}).forEach(function(document){print(document.site_id)})')
 
-
-findSiteName() {
-SITE_NAME=$(mongo ace --port 27117 --quiet <<EOF
-        db.site.find({"_id":ObjectId("$1")}, {}).pretty()
-EOF
-)
-echo $SITE_NAME
-}
-
-RESULT=$(findSiteName $(findSiteId $1))
-
-if [[ $RESULT == *"Error: invalid object id: length"* ]]
+if [[ -z $SITE_OBJID ]]
 then
-        echo "Error: AP MAC $1 not found in UniFi database."
-else
-        SITE_NAME=$(echo $RESULT | cut -d '"' -f8)
-        SITE_ID=$(echo $RESULT | cut -d '"' -f12)
-        DOMAIN=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").setting.find({"key": "super_identity"}).forEach(function(document){ print(document.hostname) })')
-        URL="https://$DOMAIN:8443/manage/site/$SITE_ID/devices/list/1/100"
-        echo "AP MAC: $1"
-        echo "Site Name: $SITE_NAME"
-        echo "Site ID: $SITE_ID"
-        echo "Site URL: $URL"
+        echo -e "Error: AP MAC $1 not found in UniFi database."
+        exit 1
 fi
+
+SITE_NAME=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.desc)})')
+SITE_ID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.name)})')
+
+if [[ -z $SITE_NAME ]] || [[ -z $SITE_ID ]]
+then
+        echo "Error: AP found but unable to retrieve site information from UniFi database."
+        exit 1
+fi
+
+DOMAIN=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").setting.find({"key":"super_identity"}).forEach(function(document){print(document.hostname)})')
+URL="https://$DOMAIN:8443/manage/site/$SITE_ID/devices/list/1/100"
+echo "AP MAC: $1"
+echo "Site Name: $SITE_NAME"
+echo "Site ID: $SITE_ID"
+echo "Site URL: $URL"
