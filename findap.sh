@@ -41,6 +41,7 @@ then
         exit 1
 fi
 
+# Find site name and id using object id previously retrieved
 SITE_NAME=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.desc)})')
 SITE_ID=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").getCollection("site").find({"_id":ObjectId("'"${SITE_OBJID}"'")}).forEach(function(document){print(document.name)})')
 
@@ -50,8 +51,12 @@ then
         exit 1
 fi
 
+# Find UniFi server hostname
 DOMAIN=$(mongo --quiet --port 27117 --eval 'db.getSiblingDB("ace").setting.find({"key":"super_identity"}).forEach(function(document){print(document.hostname)})')
+# Build URL
 URL="https://$DOMAIN:8443/manage/site/$SITE_ID/devices/list/1/100"
+
+# Output
 echo "AP MAC: $1"
 echo "Site Name: $SITE_NAME"
 echo "Site ID: $SITE_ID"
