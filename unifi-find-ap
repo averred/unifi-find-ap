@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Author: Talha Khan <tkhan@5gcomms.com>, 24/08/2020
+# Author: Talha Khan <talha@averred.net>, 24/08/2020
 
 # Usage helper function
 display_usage() {
