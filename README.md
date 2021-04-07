@@ -1,7 +1,7 @@
 # unifi-find-ap
 
 ## Summary
-Finds UniFi AP by MAC address by accessing MongoDB
+Bash script to find UniFi AP by MAC address by accessing MongoDB
 
 This script searches the UniFi AP by MAC address and returns site information.
 The MAC address must be supplied in colon-hexadecimal notation (01:23:45:67:78:9a).
